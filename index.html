@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TCH Card + Sleeve Simulation (69×125)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="brand">T.C.H — Card / Sleeve Prototype</div>
+
+    <div class="controls">
+      <div class="seg">
+        <button id="btnFront" class="btn active" type="button">앞면</button>
+        <button id="btnBack" class="btn" type="button">뒷면</button>
+        <button id="btnSim" class="btn" type="button">박스 시뮬</button>
+      </div>
+
+      <label class="toggle">
+        <input id="toggleGuides" type="checkbox" checked />
+        <span>가이드</span>
+      </label>
+
+      <button id="btnPrint" class="btn primary" type="button">인쇄</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <section class="paper">
+      <!-- CARD FRONT -->
+      <article id="cardFront" class="card face is-active" aria-label="Front">
+        <div class="trim">
+          <div class="safe">
+            <div class="top-title box">
+              <div class="mono title-1" id="brandTitle">TO. COFFEE HAUS</div>
+            </div>
+
+            <!-- 상품명 블록: "라벨창은 신경 안써도 된다" 했지만,
+                 너가 원래 말한 구조(위 네모창에 상품명 노출)도 가능하게 유지 -->
+            <div class="product box">
+              <div class="mono product-no" id="productNo">NO.1</div>
+              <div class="mono product-name" id="productName">DAILY</div>
+            </div>
+
+            <div class="desc box" id="productDesc">
+              <div class="kr desc-line">가볍고 산뜻한 고소함</div>
+              <div class="kr desc-line">, 마시기 편안한 소프트 데일리 커피</div>
+            </div>
+
+            <!-- 🔥 창(window) 프레임: 슬롯 기준 (Top 30mm부터 40mm 보이는 영역) -->
+            <div class="window-frame" aria-label="Window frame">
+              <div class="window-note mono">VISIBLE WINDOW (40mm)</div>
+
+              <div class="art-wrap" aria-label="Artwork">
+                <!-- 기본 별자리 SVG (제품별로 수정/교체 가능) -->
+                <svg id="artwork" class="art" viewBox="0 0 520 340" role="img" aria-label="Constellation">
+                  <g class="const-lines">
+                    <path d="M70 180 L140 160 L210 170 L290 110 L360 150 L430 120" />
+                    <path d="M140 160 L130 240" />
+                    <path d="M290 110 L310 200" />
+                  </g>
+
+                  <g class="const-dots">
+                    <circle cx="70" cy="180" r="7" />
+                    <circle cx="140" cy="160" r="8" />
+                    <circle cx="130" cy="240" r="7" />
+                    <circle cx="210" cy="170" r="9" class="dot-main" />
+                    <circle cx="290" cy="110" r="10" />
+                    <circle cx="310" cy="200" r="7" />
+                    <circle cx="360" cy="150" r="8" />
+                    <circle cx="430" cy="120" r="7" />
+                  </g>
+
+                  <g class="stars">
+                    <path class="star" d="M215 132 L215 208 M177 170 L253 170 M192 147 L238 193 M238 147 L192 193" />
+                    <path class="star small" d="M368 120 L368 180 M340 150 L396 150 M350 136 L386 164 M386 136 L350 164" />
+                    <path class="star big" d="M470 120 L470 260 M420 190 L520 190 M438 150 L502 230 M502 150 L438 230" />
+                  </g>
+                </svg>
+              </div>
+            </div>
+
+            <!-- 아래 정보: 박스 끼웠을 때 대부분 가려질 수 있으니,
+                 "카드 꺼냈을 때" 읽히는 용도. 필요하면 줄여도 됨 -->
+            <div class="info">
+              <div class="row">
+                <div class="label box mono">CUP NOTE</div>
+                <div class="value box kr" id="cupNote">캐슈넛 · 카라멜 · 밀크초콜렛</div>
+              </div>
+
+              <div class="row">
+                <div class="label box mono">ORIGIN</div>
+                <div class="value box kr" id="origin">브라질 · 과테말라 · 에티오피아</div>
+              </div>
+
+              <div class="row roasting">
+                <div class="label box">
+                  <div class="mono">Roasting Point</div>
+                  <div class="kr sub">로스팅 포인트</div>
+                </div>
+                <div class="value box kr" id="roastText">미디엄 로스팅</div>
+              </div>
+
+              <div class="roastbar box">
+                <div class="mono roast-scale">
+                  <span>Light</span><span>Dark</span>
+                </div>
+                <div class="bar">
+                  <div class="fill" id="roastFill"></div>
+                  <div class="ticks">
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ✅ GUIDES (슬롯/창/중심선 표시) -->
+            <div class="guides" id="guidesFront" aria-hidden="true">
+              <!-- slot lines -->
+              <div class="g-line slot1"><span class="g-tag mono">SLOT TOP (30mm)</span></div>
+              <div class="g-line slot2"><span class="g-tag mono">SLOT BOTTOM (+40mm)</span></div>
+              <!-- window center -->
+              <div class="g-line center"><span class="g-tag mono">WINDOW CENTER</span></div>
+            </div>
+
+          </div><!-- safe -->
+        </div><!-- trim -->
+      </article>
+
+      <!-- CARD BACK -->
+      <article id="cardBack" class="card face" aria-label="Back">
+        <div class="trim">
+          <div class="safe back-layout">
+            <div class="back-head">
+              <div class="mono back-title" id="backTitle">NO.1 — DAILY</div>
+              <div class="kr back-sub">설명 + QR (꺼냈을 때만 보임)</div>
+            </div>
+
+            <section class="back-desc box" id="backDescription">
+              <p class="kr">
+                산뜻한 고소함과 깔끔한 마무리. 매일 마셔도 질리지 않게,
+                누구에게나 익숙하지만 디테일이 남는 흐름으로 설계된 데일리 블렌드.
+              </p>
+              <p class="kr subtle">
+                레시피/추천 추출/보관 팁도 여기에.
+              </p>
+            </section>
+
+            <section class="qr-area">
+              <div class="qr-card box">
+                <div class="mono qr-label">ARCHIVE · ITEM</div>
+                <div class="qr" id="qr1"></div>
+                <div class="kr qr-caption">원두 상세</div>
+              </div>
+
+              <div class="qr-card box">
+                <div class="mono qr-label">TCH BOOK</div>
+                <div class="qr" id="qr2"></div>
+                <div class="kr qr-caption">브랜드북</div>
+              </div>
+            </section>
+
+            <footer class="back-foot mono">© To. coffee haus</footer>
+          </div>
+        </div>
+      </article>
+
+      <!-- SLEEVE SIMULATION -->
+      <article id="sleeveSim" class="card face" aria-label="Sleeve Simulation">
+        <div class="sim-wrap">
+          <!-- 카드가 안에 들어간 상태(움직일 수 있음) -->
+          <div class="sim-card" id="simCard">
+            <!-- 앞면만 보인다고 했으니 front를 그대로 축소 렌더 -->
+            <div class="sim-card-inner" id="simCardInner"></div>
+          </div>
+
+          <!-- 박스(슬리브) 오버레이 -->
+          <div class="sleeve">
+            <div class="sleeve-header mono">SLEEVE VIEW</div>
+
+            <!-- 라벨 창(옵션) -->
+            <div class="label-window">
+              <div class="label-window-inner mono" id="simLabel">
+                NO.1 · DAILY
+              </div>
+            </div>
+
+            <!-- 2개 슬롯 라인 (가로선) -->
+            <div class="slot-line slot-top"><span class="mono">TOP SLOT</span></div>
+            <div class="slot-line slot-bottom"><span class="mono">BOTTOM SLOT</span></div>
+
+            <!-- 두 슬롯 사이 "보이는 창" -->
+            <div class="visible-window">
+              <div class="mono window-caption">ART VISIBLE AREA (40mm)</div>
+            </div>
+
+            <div class="sleeve-footer mono">drag slider →</div>
+          </div>
+
+          <!-- 컨트롤(시뮬에서 카드 위치 조절) -->
+          <div class="sim-controls no-print">
+            <label class="mono">카드 위치(위/아래)</label>
+            <input id="simOffset" type="range" min="-18" max="18" value="0" />
+            <div class="mono hint">값을 움직여서 “창 중앙에 별(중앙별)” 맞추기</div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
